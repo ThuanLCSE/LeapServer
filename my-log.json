@@ -1,0 +1,6 @@
+ Frame [ id:34392 | timestamp:65625072071 | Hand count:(1) | Pointable count:(5) | Gesture count:(0) ]
+Frame [ id:34852 | timestamp:65629069790 | Hand count:(1) | Pointable count:(5) | Gesture count:(0) ]
+2019.02.20, 14:52:37.0831 UTC -> Hand (left) [ id: 64 | palm velocity:-44.587856,161.842926,-126.38839 | sphere center:undefined ] 
+2019.02.20, 14:52:37.0833 UTC -> 49.033768,251.707779,-66.941605
+2019.02.20, 14:52:37.0833 UTC -> -44.587856,161.842926,-126.38839
+2019.02.20, 14:52:37.0833 UTC -> -0.510708,0.545797,0.664291
