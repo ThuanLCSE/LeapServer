@@ -79,8 +79,9 @@ setInterval(function() {
         data.hands = [];
         for(var i=0; i<leapData1.hands.length ; i++){
           nHand = {}
-          nHand.arm = {}
-          nHand.arm.palmNormal = leapData1.hands[i].palmNormal;
+          nHand.palmPosition = leapData1.hands[i].palmPosition;
+          nHand.id = leapData1.hands[i].id;
+          nHand.arm = {} 
           nHand.arm.basis = leapData1.hands[i].arm.basis;
           nHand.arm.width = leapData1.hands[i].arm.width;
           nHand.arm.center = Array.prototype.slice.call(leapData1.hands[i].arm.center());
