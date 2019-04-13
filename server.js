@@ -146,8 +146,11 @@ setInterval(function() {
           sensorLeap.hands.push(nHand);  
         } 
         sensorLeap.id = leapData2.id; 
-        multiHandData.sensors.push(sensorLeap)
-        var cache = [];
+        multiHandData.sensors.push(sensorLeap) 
+        // client.set('leap1data', util.inspect(data.pointables), redis.print);
+        // client.set('leap1fram', leapData2.id, redis.print); 
+    }
+    var cache = [];
         var jsonToString = JSON.stringify(multiHandData, function(key, value) {
             if (typeof value === 'object' && value !== null) {
                 if (cache.indexOf(value) !== -1) {
@@ -166,9 +169,6 @@ setInterval(function() {
             return value;
         })
         publisher.publish(CHANNEL_REDIS, jsonToString );
-        // client.set('leap1data', util.inspect(data.pointables), redis.print);
-        // client.set('leap1fram', leapData2.id, redis.print); 
-    }
 }, 100);
 
 controller.on('ready', function() {
