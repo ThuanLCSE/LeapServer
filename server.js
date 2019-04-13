@@ -73,12 +73,12 @@ setInterval(function() {
   var time = frameCount/2;
   // console.log("received " + frameCount + " frames @ " + time + "fps");
   //console.log(leapData1)
-  var multiHandData = {"hands" : []}
+  var multiHandData = {"sensors" : []}
   if(leapData1.hands && leapData1.hands.length > 0)
     {
-        var data = leapData1;
-        data = {};
-        data.hands = [];
+        var sensorLeap = leapData1;
+        sensorLeap = {};
+        sensorLeap.hands = [];
         for(var i=0; i<leapData1.hands.length ; i++){
           nHand = {}
           nHand.palmPosition = leapData1.hands[i].palmPosition;
@@ -106,16 +106,16 @@ setInterval(function() {
 
             nHand.fingers.push(finger)
           } 
-          data.hands.push(nHand);  
+          sensorLeap.hands.push(nHand);  
         } 
-        data.id = leapData1.id; 
-        multiHandData.hands.push(data)
+        sensorLeap.id = leapData1.id; 
+        multiHandData.sensors.push(sensorLeap)
     }
     if(leapData2.hands && leapData2.hands.length > 0)
     {
-        var data = leapData2;
-        data = {};
-        data.hands = [];
+        var sensorLeap = leapData2;
+        sensorLeap = {};
+        sensorLeap.hands = [];
         for(var i=0; i<leapData2.hands.length ; i++){
           nHand = {}
           nHand.palmPosition = leapData2.hands[i].palmPosition;
@@ -143,10 +143,10 @@ setInterval(function() {
 
             nHand.fingers.push(finger)
           } 
-          data.hands.push(nHand);  
+          sensorLeap.hands.push(nHand);  
         } 
-        data.id = leapData2.id; 
-        multiHandData.hands.push(data)
+        sensorLeap.id = leapData2.id; 
+        multiHandData.sensors.push(sensorLeap)
         var cache = [];
         var jsonToString = JSON.stringify(multiHandData, function(key, value) {
             if (typeof value === 'object' && value !== null) {
