@@ -9,7 +9,7 @@ var util = require('util');
 var fs = require('fs');
 var redis = require('redis');
 
-const CHANNEL_REDIS = '123123';
+const CHANNEL_REDIS = 'leapthuan';
 
 var app = express();
 //route url
@@ -50,28 +50,30 @@ app.get('/', (req, res) => {
 app.listen(8000, () => {
   console.log('Example app listening on port 8000!')
 });
-//Leap 192.168.99.103
-console.log(Leap.version);
+//Leap 192.168.99.103 
 var controller = new Leap.Controller({
-        host: '127.0.0.1',
+        host: '192.168.56.101',
         port: 6437});
-// controller.on("frame", function(frame) {
-//   console.log("Frame: " + frame.id + " @ " + frame.timestamp);
-// });
+var controller2 = new Leap.Controller({
+        host: '192.168.56.102',
+        port: 6437}); 
 
 var frameCount = 0;
 var leapData1 = {};
+var leapData2 = {};
 controller.on("frame", function(frame) {
-	leapData1 = frame
-  // console.log(leapData1)
-  	frameCount++;
+  leapData1 = frame 
 });
+controller2.on("frame", function(frame) {
+  leapData2 = frame 
+});
+
 
 setInterval(function() {
   var time = frameCount/2;
   // console.log("received " + frameCount + " frames @ " + time + "fps");
   //console.log(leapData1)
-  
+  var multiHandData = {"hands" : []}
   if(leapData1.hands && leapData1.hands.length > 0)
     {
         var data = leapData1;
@@ -100,15 +102,53 @@ setInterval(function() {
               bone.prevJoint = leapData1.hands[i].fingers[j].bones[k].prevJoint;
               finger.bones.push(bone)
             } 
-            console.log(finger.bones[0].matrix)
+            console.log(nHand.arm.center)
 
             nHand.fingers.push(finger)
           } 
           data.hands.push(nHand);  
         } 
         data.id = leapData1.id; 
+        multiHandData.hands.push(data)
+    }
+    if(leapData2.hands && leapData2.hands.length > 0)
+    {
+        var data = leapData2;
+        data = {};
+        data.hands = [];
+        for(var i=0; i<leapData2.hands.length ; i++){
+          nHand = {}
+          nHand.palmPosition = leapData2.hands[i].palmPosition;
+          nHand.id = leapData2.hands[i].id;
+          nHand.arm = {} 
+          nHand.arm.basis = leapData2.hands[i].arm.basis;
+          nHand.arm.width = leapData2.hands[i].arm.width;
+          nHand.arm.center = Array.prototype.slice.call(leapData2.hands[i].arm.center());
+
+          nHand.confidence = leapData2.hands[i].confidence;
+          nHand.fingers= []
+          for(var j=0; j<leapData2.hands[i].fingers.length ; j++){
+            var finger = {}
+            finger.bones = []
+            for (var k=0; k<leapData2.hands[i].fingers[j].bones.length; k++){
+              var bone = {}
+              bone.basis = leapData2.hands[i].fingers[j].bones[k].basis;
+              bone.center = Array.prototype.slice.call(leapData2.hands[i].fingers[j].bones[k].center());
+              bone.matrix = Array.prototype.slice.call(leapData2.hands[i].fingers[j].bones[k].matrix());
+              bone.nextJoint = leapData2.hands[i].fingers[j].bones[k].nextJoint;
+              bone.prevJoint = leapData2.hands[i].fingers[j].bones[k].prevJoint;
+              finger.bones.push(bone)
+            } 
+            console.log(nHand.arm.center)
+
+            nHand.fingers.push(finger)
+          } 
+          data.hands.push(nHand);  
+        } 
+        data.id = leapData2.id; 
+        multiHandData.hands.push(data)
         var cache = [];
-        var jsonToString = JSON.stringify(data, function(key, value) {
+        var jsonToString = JSON.stringify(multiHandData, function(key, value) {
             if (typeof value === 'object' && value !== null) {
                 if (cache.indexOf(value) !== -1) {
                     // Duplicate reference found
@@ -126,9 +166,8 @@ setInterval(function() {
             return value;
         })
         publisher.publish(CHANNEL_REDIS, jsonToString );
-        fs.writeFileSync('./data.json', jsonToString , 'utf-8'); 
         // client.set('leap1data', util.inspect(data.pointables), redis.print);
-        // client.set('leap1fram', leapData1.id, redis.print); 
+        // client.set('leap1fram', leapData2.id, redis.print); 
     }
 }, 100);
 
