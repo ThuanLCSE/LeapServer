@@ -102,7 +102,7 @@ setInterval(function() {
               bone.prevJoint = leapData1.hands[i].fingers[j].bones[k].prevJoint;
               finger.bones.push(bone)
             } 
-            console.log(nHand.arm.center)
+           // console.log(nHand.arm.center)
 
             nHand.fingers.push(finger)
           } 
@@ -139,7 +139,7 @@ setInterval(function() {
               bone.prevJoint = leapData2.hands[i].fingers[j].bones[k].prevJoint;
               finger.bones.push(bone)
             } 
-            console.log(nHand.arm.center)
+           // console.log(nHand.arm.center)
 
             nHand.fingers.push(finger)
           } 
@@ -151,25 +151,30 @@ setInterval(function() {
         // client.set('leap1fram', leapData2.id, redis.print); 
     }
     var cache = [];
-        var jsonToString = JSON.stringify(multiHandData, function(key, value) {
-            if (typeof value === 'object' && value !== null) {
-                if (cache.indexOf(value) !== -1) {
-                    // Duplicate reference found
-                    try {
-                        // If this value does not reference a parent it can be deduped
-                        return JSON.parse(JSON.stringify(value));
-                    } catch (error) {
-                        // discard key if value cannot be deduped
-                        return;
-                    }
+    var jsonToString = JSON.stringify(multiHandData, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+                // Duplicate reference found
+                try {
+                    // If this value does not reference a parent it can be deduped
+                    return JSON.parse(JSON.stringify(value));
+                } catch (error) {
+                    // discard key if value cannot be deduped
+                    return;
                 }
-                // Store value in our collection
-                cache.push(value);
             }
-            return value;
-        })
-        publisher.publish(CHANNEL_REDIS, jsonToString );
-}, 100);
+            // Store value in our collection
+            cache.push(value);
+        }
+        return value;
+    })
+    if ((leapData2.hands && leapData2.hands.length > 0) && (leapData1.hands && leapData1.hands.length > 0)){
+      console.log("leap 1 " + (leapData1.hands!=null?leapData1.hands.length:0) + "   leap 2 " + (leapData2.hands!=null?leapData2.hands.length:0));
+    }
+    
+    publisher.publish(CHANNEL_REDIS, jsonToString );
+    fs.writeFileSync('./data.json', jsonToString , 'utf-8'); 
+}, 20);
 
 controller.on('ready', function() {
     console.log("ready");
@@ -194,6 +199,7 @@ controller.on('deviceDisconnected', function() {
 });
 
 controller.connect();
+controller2.connect();
 console.log("\nWaiting for device to connect...");
 module.exports = app;
 
