@@ -66,9 +66,6 @@ fs.readFile('config.json', 'utf8', function(err, contents) {
       port: leapConfig[i].port});
     leapControllers.push(controller);
     leapData[leapConfig[i].ip] = {}
-    leapControllers[i].on('connect', () => {leapData[frame.controller.connection.host].status ="connect"});
-    leapControllers[i].on('disconnect', () => {leapData[frame.controller.connection.host].status = "disconnect"}); 
-    leapControllers[i].on('blur', () => {leapData[frame.controller.connection.host].status "blur"}); 
     leapControllers[i].on('frame', (frame) => { leapData[frame.controller.connection.host] = frame});
     leapControllers[i].connect()
   }
@@ -80,8 +77,7 @@ setInterval(function() {
   for (var i = 0; i< leapConfig.length ; i++){
     //deep clone object
     leap = leapData[leapConfig[i].ip]
-    var sensor = new SensorFrame(leapConfig[i]); 
-    sensor.status = leap.status
+    var sensor = new SensorFrame(leapConfig[i]);  
     if(leap.hands && leap.hands.length > 0){ 
       sensor.setFrame(leap);  
       for(var j=0; j<leap.hands.length ; j++){

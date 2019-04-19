@@ -1,7 +1,6 @@
 class SensorFrame {
   constructor(config) {    
-  	this.ip = config.ip
-  	this.status = 'connected'
+  	this.ip = config.ip 
 	this.positionX = config.positionX
 	this.positionY = config.positionY 
   }
