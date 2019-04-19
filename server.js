@@ -12,6 +12,17 @@ var utilLeap = require('./controller/util');
 var {SensorFrame,Hand,Arm,Finger,Bone} = require('./controller/binding');
 
 const CHANNEL_REDIS = 'leapthuan';
+//redis By default redis.createClient() will use 127.0.0.1 and port 6379
+var portRD = '6379'
+var hostRD = '127.0.0.1'
+var publisher = redis.createClient(portRD, hostRD); 
+publisher.publish(CHANNEL_REDIS, "Server LAUNCH");
+publisher.on('error', function (err) {
+  console.log('Error ' + err);
+}); 
+publisher.on('connect', function() {
+    console.log('connected to REDIS ' + portRD + " " + hostRD);
+});
 
 var app = express();
 //route url
@@ -19,8 +30,6 @@ var indexRouter = require('./routes/index');
 var redisRouter = require('./routes/redis');
 app.use('/', indexRouter);
 app.use('/redis', redisRouter);
-  // Set the application view engine and 'views' folder
-
 
 app.use(morgan('combined'))
 app.use(express.json());
@@ -45,114 +54,50 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(8000, () => {
-  console.log('Server is listening on port 8000!')
-});
-//Leap 192.168.99.103 
-var controller = new Leap.Controller({
-        host: '192.168.56.106',
-        port: 6437});
-var controller2 = new Leap.Controller({
-        host: '192.168.56.105',
-        port: 6437}); 
-var controller3 = new Leap.Controller({
-        host: '192.168.56.104',
-        port: 6437}); 
-
-
-var frameCount = 0;
-var leapData1 = {};
-var leapData2 = {};
-var leapData3 = {};
-setInterval(function() {
-  var time = frameCount/2;
-  // console.log("received " + frameCount + " frames @ " + time + "fps");
-  //console.log(leapData1)
-  var multiHandData = {"sensors" : []}
-  var sensorLeap = {}
-  if(leapData1.hands && leapData1.hands.length > 0){ 
-    sensorLeap = new SensorFrame(leapData1); 
-    for(var i=0; i<leapData1.hands.length ; i++){
-      nHand = new Hand(leapData1.hands[i])  
-      sensorLeap.hands.push(nHand);  
-      // console.log(nHand.arm.center) 
-    } 
-    sensorLeap.id = leapData1.id; 
+var leapConfig = {}
+var leapControllers = []
+var leapData =[] ;
+var fs = require('fs');
+fs.readFile('config.json', 'utf8', function(err, contents) {
+  leapConfig =  JSON.parse(contents)
+  for (var i = 0; i< leapConfig.length ; i++){
+    var controller = new Leap.Controller({
+      host: leapConfig[i].ip,
+      port: leapConfig[i].port});
+    leapControllers.push(controller);
+    leapData[leapConfig[i].ip] = {}
+    leapControllers[i].on('connect', () => {leapData[frame.controller.connection.host].status ="connect"});
+    leapControllers[i].on('disconnect', () => {leapData[frame.controller.connection.host].status = "disconnect"}); 
+    leapControllers[i].on('blur', () => {leapData[frame.controller.connection.host].status "blur"}); 
+    leapControllers[i].on('frame', (frame) => { leapData[frame.controller.connection.host] = frame});
+    leapControllers[i].connect()
   }
-  sensorLeap.positionX = 0.0;
-  sensorLeap.positionY = 0.0;
-  multiHandData.sensors.push(sensorLeap)
-
-  var sensorLeap = {}
-  if(leapData2.hands && leapData2.hands.length > 0) {
-    var sensorLeap = new SensorFrame(leapData2); 
-    for(var i=0; i<leapData2.hands.length ; i++){
-      nHand = new Hand(leapData2.hands[i])  
-      sensorLeap.hands.push(nHand);    
-    } 
-    sensorLeap.id = leapData2.id; 
+});
+ 
+setInterval(function() {
+  var multiHandData = {"sensors" : []} 
+  var status = ""  
+  for (var i = 0; i< leapConfig.length ; i++){
+    //deep clone object
+    leap = leapData[leapConfig[i].ip]
+    var sensor = new SensorFrame(leapConfig[i]); 
+    sensor.status = leap.status
+    if(leap.hands && leap.hands.length > 0){ 
+      sensor.setFrame(leap);  
+      for(var j=0; j<leap.hands.length ; j++){
+        nHand = new Hand(leap.hands[j])  
+        sensor.hands.push(nHand);  
+        // console.log(nHand.arm.center) 
+      } 
+      sensor.id = leap.id; 
+    }
+    multiHandData.sensors.push(sensor) 
+    status = status + " leap "+leapConfig[i].ip+" " + (leap.hands!=null?leap.hands.length:0)
   } 
-  sensorLeap.positionX = 0.0;
-  sensorLeap.positionY = 0.0;
-  multiHandData.sensors.push(sensorLeap)
-  
-  var sensorLeap = {}
-  if(leapData3.hands && leapData3.hands.length > 0) {
-    var sensorLeap = new SensorFrame(leapData3); 
-    for(var i=0; i<leapData3.hands.length ; i++){
-      nHand = new Hand(leapData3.hands[i])  
-      sensorLeap.hands.push(nHand);    
-    } 
-    sensorLeap.id = leapData2.id; 
-  } 
-    sensorLeap.positionX = 0.0;
-    sensorLeap.positionY = 0.0;
-    multiHandData.sensors.push(sensorLeap)
+  console.log(status);
   var jsonToString = utilLeap.jsonToText(multiHandData) 
-  // if ((leapData2.hands && leapData2.hands.length > 0) && (leapData1.hands && leapData1.hands.length > 0)){
-  console.log("leap 1 " + (leapData1.hands!=null?leapData1.hands.length:0) + "   leap 2 " + (leapData2.hands!=null?leapData2.hands.length:0) +"   leap 3 " + (leapData3.hands!=null?leapData3.hands.length:0));
-  // } 
   publisher.publish(CHANNEL_REDIS, jsonToString ); 
   //fs.writeFileSync('./data.jso/**/n', jsonToString , 'utf-8'); 
-}, 20);
+}, 500);
 
-controller.on('ready', function() {
-    console.log("ready");
-});
-controller.on('connect', function() {
-    console.log("connect Leap device");
-});
-controller.on('disconnect', function() {
-    console.log("disconnect");
-});
-controller.on('focus', function() {
-    console.log("focus Leap device");
-});
-controller.on('blur', function() {
-    console.log("blur");
-}); 
-controller.on('frame',  (frame) => { leapData1 = frame });
-controller.connect()
-controller2.on("frame", function(frame) {
-  leapData2 = frame 
-}); 
-controller2.connect();
-controller3.on('frame',  (frame) => { leapData3 = frame });
-controller3.connect()
-console.log("\nWaiting for Leap device to connect...");
 module.exports = app;
-
-//redis By default redis.createClient() will use 127.0.0.1 and port 6379
-var portRD = '6379'
-var hostRD = '127.0.0.1'
-var publisher = redis.createClient(portRD, hostRD); 
-publisher.publish(CHANNEL_REDIS, "Server LAUNCH");
-publisher.on('error', function (err) {
-  console.log('Error ' + err);
-}); 
-publisher.on('connect', function() {
-    console.log('connected to REDIS ' + portRD + " " + hostRD);
-});
-publisher.on('error', function (err) {
-  console.log('Error ' + err);
-}); 

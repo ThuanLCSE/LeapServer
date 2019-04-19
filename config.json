@@ -1,0 +1,19 @@
+[
+{
+	"ip" : "127.0.0.1",
+	"port" : 6437,
+	"positionX" : 1.0,
+	"positionY" : 2.0
+}
+]
+
+
+// var controller = new Leap.Controller({
+//         host: 'localhost',
+//         port: 6437});
+// var controller2 = new Leap.Controller({
+//         host: '192.168.56.105',
+//         port: 6437}); 
+// var controller3 = new Leap.Controller({
+//         host: '192.168.56.104',
+//         port: 6437}); 

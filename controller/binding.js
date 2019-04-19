@@ -1,10 +1,15 @@
 class SensorFrame {
-  constructor(data) {   
-    this.dump = data.dump();
+  constructor(config) {    
+  	this.ip = config.ip
+  	this.status = 'connected'
+	this.positionX = config.positionX
+	this.positionY = config.positionY 
+  }
+  setFrame(data){
+  	this.dump = data.dump();
     this.toString = data.toString();
     this.hands = [];
   }
-
 };
 class Hand {
   constructor(data) {   
