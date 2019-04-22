@@ -1,7 +1,6 @@
 class SensorFrame {
   constructor(config) {    
-  	this.ip = config.ip
-  	this.status = 'connected'
+  	this.ip = config.ip 
 	this.positionX = config.positionX
 	this.positionY = config.positionY 
   }
@@ -34,7 +33,7 @@ class Hand {
   	this.setFingers(data.fingers)
   }
   setFingers(fingerData){
-	this.fingers= []
+	  this.fingers= []
   	for(var j=0; j<fingerData.length ; j++){
 	    var finger = new Finger(fingerData[j])   
 	    this.fingers.push(finger)
@@ -68,8 +67,7 @@ class Finger {
     this.pipPosition = Array.prototype.slice.call(data.pipPosition);
     this.tipPosition = Array.prototype.slice.call(data.tipPosition);
     this.length = data.length
-    this.timeVisible = data.timeVisible
-    this.type = data.type 
+    this.timeVisible = data.timeVisible 
     this.width = data.width 
     this.setBones(data.bones)
   } 
