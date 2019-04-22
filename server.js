@@ -77,8 +77,7 @@ setInterval(function() {
   for (var i = 0; i< leapConfig.length ; i++){
     //deep clone object
     leap = leapData[leapConfig[i].ip]
-    var sensor = new SensorFrame(leapConfig[i]); 
-    sensor.status = leap.status
+    var sensor = new SensorFrame(leapConfig[i]);  
     if(leap.hands && leap.hands.length > 0){ 
       sensor.setFrame(leap);  
       for(var j=0; j<leap.hands.length ; j++){
