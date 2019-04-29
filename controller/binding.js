@@ -50,7 +50,7 @@ class Arm {
 	this.matrix = Array.prototype.slice.call(data.matrix());
 	this.nextJoint = data.nextJoint;
 	this.prevJoint = data.prevJoint;
-	this.direction = data.direction;
+	this.direction =Array.prototype.slice.call(data.direction());
 	this.type = data.type;
   }
 
@@ -85,6 +85,7 @@ class Bone {
 	this.matrix = Array.prototype.slice.call(data.matrix());
 	this.nextJoint = data.nextJoint;
 	this.prevJoint = data.prevJoint;
+  this.direction = Array.prototype.slice.call(data.direction()); 
 	this.width = data.width;
 	this.type = data.type;
   } 
