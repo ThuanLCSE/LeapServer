@@ -3,6 +3,10 @@ class SensorFrame {
   	this.ip = config.ip 
 	this.positionX = config.positionX
 	this.positionY = config.positionY 
+    this.hands = [];
+    this.dump = '';
+    this.toString = '';
+    this.id = '';
   }
   setFrame(data){
   	this.dump = data.dump();
