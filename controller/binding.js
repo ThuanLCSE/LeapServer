@@ -37,7 +37,7 @@ class Hand {
   	this.setFingers(data.fingers)
   }
   setFingers(fingerData){
-	this.fingers= []
+	  this.fingers= []
   	for(var j=0; j<fingerData.length ; j++){
 	    var finger = new Finger(fingerData[j])   
 	    this.fingers.push(finger)
@@ -54,7 +54,7 @@ class Arm {
 	this.matrix = Array.prototype.slice.call(data.matrix());
 	this.nextJoint = data.nextJoint;
 	this.prevJoint = data.prevJoint;
-	this.direction = data.direction;
+	this.direction =Array.prototype.slice.call(data.direction());
 	this.type = data.type;
   }
 
@@ -71,8 +71,7 @@ class Finger {
     this.pipPosition = Array.prototype.slice.call(data.pipPosition);
     this.tipPosition = Array.prototype.slice.call(data.tipPosition);
     this.length = data.length
-    this.timeVisible = data.timeVisible
-    this.type = data.type 
+    this.timeVisible = data.timeVisible 
     this.width = data.width 
     this.setBones(data.bones)
   } 
@@ -90,6 +89,7 @@ class Bone {
 	this.matrix = Array.prototype.slice.call(data.matrix());
 	this.nextJoint = data.nextJoint;
 	this.prevJoint = data.prevJoint;
+  this.direction = Array.prototype.slice.call(data.direction()); 
 	this.width = data.width;
 	this.type = data.type;
   } 
