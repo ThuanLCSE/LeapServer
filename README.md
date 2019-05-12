@@ -22,7 +22,6 @@ This server provide a technical way to consumpt **more than one** Leap Motion se
 git clone https://github.com/ThuanLCSE/LeapServer.git
 cd LeapServer
 npm install
-npm server.js
 ```
 ## Configuration
 In **server.js**, these code below are used to set up REDIS host, port and the name of publish/subscribe channel 
@@ -32,15 +31,30 @@ const CHANNEL_REDIS = 'leapthuan';
 var portRD = '6379'
 var hostRD = '127.0.0.1'	
 ``` 
-In **config.js** file, the information of Virtual Machine in order to listen the Leap Motion sensors is defined in JSON format:
+In **config.js** file, the information of all the Leap Motion Service running on Virtual Machine in order to listen the connected sensor is represented as JSON:
 
 ```
 [{
 	"ip" : "127.0.0.1",
 	"port" : 6437,
 	"positionX" : 1.0,
-	"positionY" : 2.0
-},...
+	"positionY" : 2.0,
+	"rotation" : 90
+},{
+....
+}...
 ]
 ```
->The position X and Y are related to the position of the Leap Motion sensor on the table  
+> **Note:** The position X and Y are related to the position of the Leap Motion sensor on the table  
+> The rotation is the angle of the Leap Motion sensor compared to X axis
+> The IP and port is the one of the Leap Service WebSocket running in the Virtual machine where the Leap Motion sensor is connected
+
+After put all the configuration of each Leap Motion sensor to **config.js** file, you can run this command to start the server
+```
+	npm server.js
+```
+When the server started, the information displayed from the console is the number of detected hands of each sensor by IP. For example:
+```
+  127.0.0.1 2 192.168.25.3 0
+```
+The console line above mean the sensor that is connected to VM whose IP is 127.0.0.1 has detected 2 hands, otherwise the sensor that is connected to VM whose IP is 192.168.25.3 hadn't detected any hand.
