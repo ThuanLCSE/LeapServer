@@ -1,8 +1,9 @@
 class SensorFrame {
   constructor(config) {    
-  	this.ip = config.ip 
-	this.positionX = config.positionX
-	this.positionY = config.positionY 
+  	this.ip = config.ip ;
+	this.positionX = config.positionX;
+	this.positionY = config.positionY ;
+  this.rotation = config.rotation ;
     this.hands = [];
     this.dump = '';
     this.toString = '';

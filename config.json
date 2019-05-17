@@ -1,8 +1,9 @@
 [
 { 
-	"ip" : "192.168.56.105", 
+	"ip" : "127.0.0.1", 
 	"port" : 6437,
-	"positionX" : 1.0,
-	"positionY" : 2.0
+	"positionX" : 5.0,
+	"positionY" : 10.0,
+	"rotation" : 0
 } 
 ]   

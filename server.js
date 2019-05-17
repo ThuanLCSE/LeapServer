@@ -89,7 +89,7 @@ setInterval(function() {
       sensor.id = leap.id; 
     }
     multiHandData.sensors.push(sensor) 
-    status = status + " leap "+leapConfig[i].ip+" " + (leap.hands!=null?leap.hands.length:0)
+    status = status  +leapConfig[i].ip+" hands: " + (leap.hands!=null?leap.hands.length:0)+ " "
   } 
   console.log(status); 
   var jsonToString = utilLeap.jsonToText(multiHandData) 
